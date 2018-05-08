@@ -1,0 +1,30 @@
+.content{
+	margin-top: 15px;
+}
+.purchaseInfo table{
+	width: 100%;
+	text-align: center;
+}
+.content .top{
+	padding-left:500px;
+	padding-bottom:15px;
+} 
+.search{
+	width: 280px;
+	float: left;
+}
+.search input{
+	height: 28px;
+}
+.search button{
+	height: 28px;
+}
+
+.add button{
+	width: 80px;
+	height: 28px;
+	background-color: gold;
+	border-radius: 5px;
+	border: 0px;
+	margin-left:20px;
+}

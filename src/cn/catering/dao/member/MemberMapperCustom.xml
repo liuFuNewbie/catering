@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.member.MemberMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+<resultMap id="BaseResultMap" type="cn.catering.pojo.Member">
+    <id column="memberId" jdbcType="INTEGER" property="memberId" />
+    <result column="memberName" jdbcType="VARCHAR" property="memberName" />
+    <result column="account" jdbcType="INTEGER" property="account" />
+    <result column="gender" jdbcType="CHAR" property="gender" />
+    <result column="birthdate" jdbcType="TIMESTAMP" property="birthdate" />
+    <result column="phone" jdbcType="BIGINT" property="phone" />
+    <result column="createDate" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="state" jdbcType="INTEGER" property="state" />
+    <result column="integral" jdbcType="INTEGER" property="integral" />
+    <result column="balance" jdbcType="DECIMAL" property="balance" />
+    <result column="totalConsumption" jdbcType="DECIMAL" property="totalConsumption" />
+    <result column="cardId" jdbcType="INTEGER" property="cardId" />
+  </resultMap>
+  <!-- 总数 -->
+  <select id="getMemberCount" resultType="int">
+   select count(memberId)  from member 
+  <if test="memberName!=null and memberName!=''">
+  	<where>
+  		 memberName like  CONCAT('%',#{memberName},'%')
+  	</where>
+  </if>
+</select>
+<!-- 查询全部数据 -->
+<select id="getMemberList" resultType="cn.catering.pojo.Member" parameterType="map">
+select  memberId,memberName,account,gender,birthdate,phone,createDate,state,integral,balance,totalConsumption,cardId from  member where 1=1
+  <if test="memberName !=null and memberName != ''">
+    and  memberName like  CONCAT('%',#{memberName},'%')
+  </if>
+    limit  #{pageSupport.index},#{pageSupport.pageSize}
+</select>
+<!-- 根据会员名称查询记录行数 -->
+ <select id="getMemberCoByName" resultType="java.lang.Integer">
+ 	select count(1) from member where memberName=#{memberName}
+  </select>
+  <!-- 根据id查询数据 -->
+  <select id="getMemberByid" resultMap="BaseResultMap">
+ 	 select memberId,memberName,gender,phone,birthdate,state,cardId,balance,account from member where memberId=#{memberId}
+  </select>
+  <!-- 修改 -->
+    <update id="updateMember" parameterType="cn.catering.pojo.Member">
+ 	 update member set memberName=#{memberName} ,gender=#{gender},phone=#{phone},balance=#{balance},state=#{state},birthdate =NOW(),createDate=NOW(), cardId=#{cardId} WHERE memberId=#{memberId}
+   </update>
+   <!-- 添加 -->
+   <insert id="insert" parameterType="map">
+ 	insert into member ( memberName, account, gender, birthdate, phone, state,  balance,  cardId,createDate)
+    values(#{memberName}, #{account},#{gender},#{birthdate,jdbcType=datetime}, #{phone},#{state},#{balance},#{cardId},now())
+   </insert>
+   
+   <!-- 验证会员号是否存在 -->
+    <select id="selectIsAccount" parameterType="long" resultType="int">
+		SELECT memberId FROM member WHERE account=#{account}
+	</select>
+  </mapper>
+  

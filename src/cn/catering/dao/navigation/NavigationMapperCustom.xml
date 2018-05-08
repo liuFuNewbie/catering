@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.navigation.NavigationMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+  <resultMap id="BaseResultMap" type="cn.catering.pojo.Navigation">
+    <id column="navId" jdbcType="INTEGER" property="navId" />
+    <result column="navName" jdbcType="VARCHAR" property="navName" />
+    <result column="grade" jdbcType="INTEGER" property="grade" />
+    <result column="parent" jdbcType="INTEGER" property="parent" />
+    <result column="webPagePath" jdbcType="VARCHAR" property="webPagePath" />
+  </resultMap>
+  <!-- 查询商品类别编号和名称 -->
+  <select id="getNavigationList" resultMap="BaseResultMap">
+  	select navId,navName from navigation
+  </select>
+  
+  <!-- 根据商品类别名称查询记录行数 -->
+  <select id="getNavigationCountByName" resultType="int">
+ 	select count(1) from navigation where navName=#{navName}
+  </select>
+  
+</mapper>

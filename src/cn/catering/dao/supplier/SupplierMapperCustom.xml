@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.supplier.SupplierMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+	<resultMap id="BaseResultMap" type="cn.catering.pojo.Supplier">
+		<id column="supplierId" jdbcType="INTEGER" property="supplierId" />
+		<result column="supplierName" jdbcType="VARCHAR" property="supplierName" />
+		<result column="shoppingName" jdbcType="VARCHAR" property="shoppingName" />
+		<result column="phone" jdbcType="BIGINT" property="phone" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="remark" jdbcType="VARCHAR" property="remark" />
+	</resultMap>
+	
+	<select id="getSupplinerList" parameterType="map"
+		resultType="cn.catering.pojo.Supplier">
+		SELECT supplierId, supplierName, shoppingName, phone,
+		address, remark
+		from supplier
+	</select>
+
+	<!-- 获取供应商信息列表，还可以根据供应商名称获取信息 -->
+	<select id="getSuppliner" parameterType="map"
+		resultType="cn.catering.pojo.Supplier">
+		SELECT supplierId, supplierName, shoppingName, phone, address, remark
+		from supplier
+		<if test="supplierName!=null and supplierName!=''">
+			<where>
+				supplierName LIKE CONCAT('%',#{supplierName},'%') 
+			</where>
+		</if>
+		LIMIT #{pageSupport.index},#{pageSupport.pageSize};
+	</select>
+
+	<!-- 获取供应商数量，还可以根据供应商名称获取供应商数量 -->
+	<select id="getSupplierCount" parameterType="java.lang.String"
+		resultType="int">
+		select count(supplierId) from supplier
+		<if test="supplierName!=null and supplierName!=''">
+			<where>
+				supplierName LIKE CONCAT('%',#{supplierName},'%') 
+			</where>
+		</if>
+	</select>
+
+	<!-- 根据供应商编号查询供应商信息 -->
+	<select id="getSupplierById" parameterType="int"
+		resultType="cn.catering.pojo.Supplier">
+		SELECT supplierId, supplierName, shoppingName, phone, address, remark
+		from supplier
+		<if test="supplierId!=null">
+			<where>
+				supplierId=#{supplierId}
+			</where>
+		</if>
+	</select>
+	<!-- 根据供应商编号修改供应商信息 -->
+	<update id="updateSupplierById" parameterType="int">
+		update supplier
+		<set>
+			<trim suffixOverrides=",">
+				<if test="supplier.supplierName != null">
+					supplierName = #{supplier.supplierName},
+				</if>
+				<if test="supplier.shoppingName != null">
+					shoppingName = #{supplier.shoppingName},
+				</if>
+				<if test="supplier.phone != null">
+					phone = #{supplier.phone},
+				</if>
+				<if test="supplier.address != null">
+					address = #{supplier.address},
+				</if>
+				<if test="supplier.remark != null">
+					remark = #{supplier.remark},
+				</if>
+			</trim>
+		</set>
+		where supplierId = #{supplier.supplierId}
+	</update>
+
+	<!-- 根据供应商编号删除供应商信息 -->
+	<delete id="delSupplierById" parameterType="int">
+		delete from supplier
+		where supplierId = #{supplierId}
+	</delete>
+
+	<!-- 添加供应商信息 -->
+	<insert id="insertSupplier" parameterType="int">
+		insert into supplier
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="supplier.supplierName != null">
+				supplierName,
+			</if>
+			<if test="supplier.shoppingName != null">
+				shoppingName,
+			</if>
+			<if test="supplier.phone != null">
+				phone,
+			</if>
+			<if test="supplier.address != null">
+				address,
+			</if>
+			<if test="supplier.remark != null">
+				remark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="supplier.supplierName != null">
+				#{supplier.supplierName},
+			</if>
+			<if test="supplier.shoppingName != null">
+				#{supplier.shoppingName},
+			</if>
+			<if test="supplier.phone != null">
+				#{supplier.phone},
+			</if>
+			<if test="supplier.address != null">
+				#{supplier.address},
+			</if>
+			<if test="supplier.remark != null">
+				#{supplier.remark},
+			</if>
+		</trim>
+	</insert>
+	<select id="getBusinessById" parameterType="java.lang.Integer"
+		resultType="int">
+		SELECT COUNT(s.supplierId) from supplier as s
+		INNER JOIN
+		business as b ON s.supplierId=b.supplierId WHERE
+		s.supplierId=#{supplierId}
+	</select>
+</mapper>

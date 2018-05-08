@@ -1,0 +1,27 @@
+{
+  "ecmaVersion": 5,
+  "plugins": {
+    "guess-types": {
+      
+    },
+    "outline": {
+      
+<<<<<<< HEAD
+    },
+    "browser-extension": {
+      
+    },
+    "angular1": {
+      
+=======
+>>>>>>> branch 'master' of https://github.com/liuFuNewbie/items.git
+    }
+<<<<<<< HEAD
+  },
+  "libs": [
+    "browser"
+  ]
+=======
+  }
+>>>>>>> branch 'master' of https://github.com/liuFuNewbie/items.git
+}

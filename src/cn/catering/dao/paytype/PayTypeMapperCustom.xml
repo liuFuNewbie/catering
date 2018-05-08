@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.paytype.PayTypeMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+  <resultMap id="BaseResultMap" type="cn.catering.pojo.PayType">
+    <id column="payId" jdbcType="INTEGER" property="payId" />
+    <result column="payName" jdbcType="VARCHAR" property="payName" />
+  </resultMap>
+  
+  <!-- 查询支付类别编号和名称 -->
+  <select id="getPayTypeList" resultMap="BaseResultMap">
+  	select payId,payName from paytype
+  </select>
+  
+  <!-- 根据支付类别名称查询记录行数 -->
+  <select id="getPayTypeCountByName" resultType="int">
+ 	select count(1) from paytype where payName=#{payName}
+  </select>
+</mapper>

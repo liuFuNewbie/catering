@@ -1,0 +1,12 @@
+.content table tr td{
+	padding-top: 30px;
+}
+.content{
+	margin-left: 40%;
+}
+.content  table tr .anniu input{
+	width: 78px;
+	height: 28px;
+	border-radius: 5px;
+	border: 0px;
+}

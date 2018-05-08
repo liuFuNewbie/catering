@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.business.BusinessMapperCustom">
+	<select id="getBusinessExtension" parameterType="map"
+		resultType="cn.catering.pojo.BusinessExtension">
+		SELECT businessId,supplierName,b.createDate,due,accountPaid,empName,
+		b.remark FROM business as b
+		INNER JOIN supplier as s ON
+		b.supplierId=s.supplierId
+		INNER JOIN employee as e ON b.empId=e.empId
+			<if test="supplierName!=null and supplierName!=''">
+				<where>
+				 supplierName LIKE CONCAT('%',#{supplierName},'%') 
+				</where>
+			</if>
+		  ORDER BY businessId
+ 		LIMIT #{pageSupport.index},#{pageSupport.pageSize}
+	</select>
+
+	<select id="getBusinessExtensionCount" parameterType="java.lang.String" resultType="int">
+		SELECT count(businessId) FROM business as b
+		INNER JOIN supplier as s ON
+		b.supplierId=s.supplierId
+		INNER JOIN employee as e ON b.empId=e.empId
+ 			<if test="supplierName!=null  and supplierName!=''">
+				<where>
+				supplierName LIKE CONCAT('%',#{supplierName},'%') 
+				</where> 
+			</if>
+	</select>
+
+	<select id="getBusinessById" parameterType="int"
+		resultType="cn.catering.pojo.Business">
+			SELECT businessId,due,accountPaid,createDate,remark,supplierId,empId FROM business  
+		<if test="businessId!=null">
+			<where>
+				 businessId=#{businessId}
+			</where>
+		</if>
+	</select>
+
+	<insert id="insertBusiness" parameterType="int">
+		insert into business
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="business.due != null">
+				due,
+			</if>
+			<if test="business.accountPaid != null">
+				accountPaid,
+			</if>
+			<if test="business.createDate != null">
+				createDate,
+			</if>
+			<if test="business.remark != null">
+				remark,
+			</if>
+			<if test="business.supplierId != null">
+				supplierId,
+			</if>
+			<if test="business.empId != null">
+				empId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="business.due != null">
+				#{business.due},
+			</if>
+			<if test="business.accountPaid != null">
+				#{business.accountPaid},
+			</if>
+			<if test="business.createDate != null">
+				#{business.createDate},
+			</if>
+			<if test="business.remark">
+				#{business.remark},
+			</if>
+			<if test="business.supplierId != null">
+				#{business.supplierId},
+			</if>
+			<if test="business.empId != null">
+				#{business.empId},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateBusinessById" parameterType="int">
+		UPDATE business
+		<set>
+			<if test="business.supplierId!=null">
+				supplierId=#{business.supplierId},
+			</if>
+			<if test="business.due!=null">
+				due=#{business.due},
+			</if>
+			<if test="business.accountPaid!=null">
+				accountPaid=#{business.accountPaid},
+			</if>
+			<if test="business.empId!=null">
+				empId=#{business.empId},
+			</if>
+			<if test="business.remark!=null">
+				remark=#{business.remark},
+			</if>
+		</set>
+		WHERE businessId=#{business.businessId}
+	</update>
+	<delete id="delectBusinessById" parameterType="int">
+		DELETE FROM
+		business WHERE businessId=#{businessId}
+	</delete>
+</mapper>

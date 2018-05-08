@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.combo.ComboMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+  <resultMap id="BaseResultMap" type="cn.catering.pojo.Combo">
+    <id column="comboId" jdbcType="INTEGER" property="comboId" />
+    <result column="comboName" jdbcType="VARCHAR" property="comboName" />
+  </resultMap>
+  
+  <select id="getComboCount" resultType="int">
+   select count(1) as count  from combo
+</select>
+<select id="getComboList" resultMap="BaseResultMap">
+  select comboId,comboName from combo where 1=1
+  <if test="comboName !=null and comboName != ''">
+    and comboName like CONCAT('%',#{comboName},'%')
+  </if>
+    limit #{currentPageNo},#{pageSize}
+</select>
+
+<select id="getComboByid" resultMap="BaseResultMap">
+  select comboId,comboName from combo where comboId=#{comboId}
+</select>
+<select id="selectlistCombos" resultMap="BaseResultMap">
+  select comboId,comboName from combo
+</select>
+  
+</mapper>

@@ -1,0 +1,103 @@
+/*时间*/
+.publicTime{
+    height: 70px;
+    line-height: 65px;
+    font-size: 20px;
+    padding-left: 20px;
+    color: black;
+}
+.publicTime p{
+    float: left;
+    font-weight: bold;
+}
+.publicTime span{
+	float: right;
+	margin-right: 15px;
+}
+
+table tr{
+	font-size: 18px;
+}
+a:link {
+	text-decoration: none;
+}
+a.shanchu{
+	margin-left: 20px;
+}
+
+
+/*商品详细信息页面*/ 
+.shoppinginfo{
+	padding: 0px;
+	margin: 0px;
+}
+
+/* 首页头部搜索框样式 */
+.inquiry{
+	float: right;
+}
+.increasedHead {
+	display: inline-block;
+	padding: 4px 15px;
+	background-color: lightseagreen;
+	border-radius: 10px;
+	margin: 5px 0px 15px 15px;
+}
+ 
+.raise {
+	margin-left: 0px;
+	font-size: 17px;
+	color: white;
+}
+
+.shoppinginfo .info{
+	width: 100%;
+	overflow: auto;
+}
+.shoppinginfo .info table{
+	width:280%;
+	text-align: center;
+}
+
+.billinfo{
+	width: 100%;
+	overflow: auto;
+}
+
+/* 鼠标悬浮变色 */
+table tr:HOVER{
+	background-color: #caeed0;
+}
+
+.shoppinginfo .info .number{
+	width: 2%;
+}
+.shoppinginfo .info .userName{
+	width: 3%;
+}
+.shoppinginfo .info .shoppingName{
+	width: 9%;
+}
+.shoppinginfo .info .math{
+	width: 2%;
+}
+.shoppinginfo .info .typeName{
+	width: 4%;
+}
+.shoppinginfo .info .mealName{
+	width: 7%;
+}
+
+.shoppinginfo .info .homeName{
+	width: 7%;
+}
+.shoppinginfo .info .eatNumber{
+	width: 3%;
+}
+.shoppinginfo .info .remarks{
+	width: 11%;
+}
+/*奇数行变色*/
+table.discolorationNumber tr:nth-of-type(odd){
+	background:#cccccc;
+}

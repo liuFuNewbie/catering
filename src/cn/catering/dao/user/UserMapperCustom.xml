@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.user.UserMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+	<resultMap id="BaseResultMap" type="cn.catering.pojo.User">
+    <id column="userId" jdbcType="INTEGER" property="userId" />
+    <result column="userName" jdbcType="VARCHAR" property="userName" />
+    <result column="userPwd" jdbcType="VARCHAR" property="userPwd" />
+    <result column="gender" jdbcType="CHAR" property="gender" />
+    <result column="birthdate" jdbcType="TIMESTAMP" property="birthdate" />
+    <result column="phone" jdbcType="BIGINT" property="phone" />
+    <result column="roleId" jdbcType="INTEGER" property="roleId" />
+    <result column="headPortraits" jdbcType="VARCHAR" property="headPortraits" />
+    <association property="role" column="roleId" javaType="cn.catering.pojo.Role">
+    	<id column="roleId" property="roleId"/>
+    	<result column="roleName" property="roleName"/>
+    </association>
+  	</resultMap>
+	<!-- 获取用户列表 -->
+	<select id="getUserList" parameterType="map" resultType="cn.catering.pojo.User">
+		SELECT
+		userId,userName FROM `user`;
+	</select>
+
+	<!-- 根据用户名获取用户编号 -->
+	<select id="getUserByUserName" parameterType="java.lang.String"
+		resultType="cn.catering.pojo.User">
+		SELECT userId FROM `user` WHERE userName=#{userName}
+	</select>
+
+	<!-- 获取用户信息列表 条件可有可无 -->
+	<select id="getUserListByWrongUserName" parameterType="map"
+		resultType="cn.catering.pojo.User">
+		SELECT userId,userName,userPwd,gender,birthdate,phone from `user`
+		<if test="userName!=null and userName!=''">
+			<where>
+				userName LIKE '%' #{userName} '%'
+			</where>
+		</if>
+		LIMIT #{pageSupport.index},#{pageSupport.pageSize};
+	</select>
+
+	<select id="getUserListByWrongUserNameCount" parameterType="string"
+		resultType="int">
+		SELECT count(userId) from `user`
+		<if test="userName!=null and userName!=''">
+			<where>
+				userName LIKE CONCAT('%',#{userName},'%')
+			</where>
+		</if>
+	</select>
+
+	<insert id="insertUser" parameterType="cn.catering.pojo.User" >
+		insert into user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="user.userName != null">
+				userName,
+			</if>
+			<if test="user.userPwd != null">
+				userPwd,
+			</if>
+			<if test="user.gender != null">
+				gender,
+			</if>
+			<if test="user.birthdate != null">
+				birthdate,
+			</if>
+			<if test="user.phone != null">
+				phone,
+			</if>
+			<if test="user.roleId != null">
+				roleId,
+			</if>
+			<if test="user.headPortraits != null">
+				headPortraits,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="user.userName != null">
+				#{user.userName },
+			</if>
+			<if test="user.userPwd != null">
+				#{user.userPwd },
+			</if>
+			<if test="user.gender != null">
+				#{user.gender },
+			</if>
+			<if test="user.birthdate != null">
+				#{user.birthdate },
+			</if>
+			<if test="user.phone != null">
+				#{user.phone },
+			</if>
+			<if test="user.roleId != null">
+				#{user.roleId },
+			</if>
+			<if test="user.headPortraits != null">
+				#{user.headPortraits},
+			</if>
+		</trim>
+	</insert>
+	<!-- 根据用户编号获取用户信息 -->
+	<select id="getUserById" parameterType="int" resultType="cn.catering.pojo.User">
+		SELECT userId,userName,userPwd,gender,birthdate,phone,roleId,headPortraits FROM `user` where userId=#{userId}
+	</select>
+	<!-- 根据用户编号获取用户信息 -->
+	<select id="getUser" parameterType="int" resultMap="BaseResultMap">
+		SELECT userId,r.roleName,userName,userPwd,gender,birthdate,phone,r.roleId,headPortraits FROM `user` u,role r WHERE u.roleId=r.roleId AND userName=#{userName}
+	</select>
+	<!-- 根据用户编号修改用户信息 -->
+	<update id="updateUserById" parameterType="int">
+		update user
+		<set>
+			<trim suffixOverrides=",">
+				<if test="user.userName != null">
+					userName = #{user.userName},
+				</if>
+				<if test="user.userPwd != null">
+					userPwd = #{user.userPwd},
+				</if>
+				<if test="user.gender != null">
+					gender = #{user.gender},
+				</if>
+				<if test="user.birthdate != null">
+					birthdate = #{user.birthdate},
+				</if>
+				<if test="user.phone != null">
+					phone = #{user.phone},
+				</if>
+				<if test="user.roleId != null">
+					roleId = #{user.roleId},
+				</if>
+				<if test="user.headPortraits != null">
+					headPortraits = #{user.headPortraits},
+				</if>
+			</trim>
+		</set>
+		where userId=#{user.userId}
+	</update>
+	<!-- 根据用户编号获取用户数量 -->
+	<select id="getUserCountById" parameterType="int" resultType="int">
+		SELECT
+		count(u.userId) FROM `user` as u
+		INNER JOIN material as m ON
+		u.userId=m.userId WHERE u.userId=#{userId};
+	</select>
+	<!-- 根据用户编号删除用户信息 -->
+	<delete id="delUserById" parameterType="int">
+		DELETE from `user` where userId=#{userId}
+	</delete>
+	
+	<select id="getSelectUserheadPortraits" resultMap="BaseResultMap">
+    select userId, userName, userPwd,gender,birthdate, phone, roleId, headPortraits FROM `user`
+    where userName=#{userName}
+  </select>
+  
+  <update id="updateheadPortraits" parameterType="cn.catering.pojo.User">
+    update user set headPortraits=#{headPortraits} 
+    where userId=#{userId}
+  </update>
+</mapper>

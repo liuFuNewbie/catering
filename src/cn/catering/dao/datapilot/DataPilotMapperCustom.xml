@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.datapilot.DataPilotMapperCustom">
+ 	<select id="getAllDataPilots" resultType="cn.catering.pojo.DataPilotCustom">
+ 		SELECT dataPilotId, dataPilotName, grade, parent, webPagePath FROM datapilot
+ 	</select>
+</mapper>

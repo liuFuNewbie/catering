@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.billinfo.BillInfoMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+  <resultMap id="BaseResultMap" type="cn.catering.pojo.BillInfo">
+    <id column="marketId" jdbcType="INTEGER" property="marketId" />
+    <result column="totalMoney" jdbcType="DECIMAL" property="totalMoney" />
+    <result column="dataTime" jdbcType="TIMESTAMP" property="dataTime" />
+    <result column="describe" jdbcType="DECIMAL" property="describe"/>
+    <result column="memberId" jdbcType="INTEGER" property="memberId" />
+    <result column="memberName" jdbcType="VARCHAR" property="memberName"/>
+    <result column="account" jdbcType="INTEGER" property="account" />
+    <result column="comboId" jdbcType="INTEGER" property="comboId" />
+    <result column="comboName" jdbcType="VARCHAR" property="comboName"/>
+    <result column="menuId" jdbcType="INTEGER" property="menuId" />
+    <result column="discount" jdbcType="INTEGER" property="discount" />
+    <result column="payId" jdbcType="INTEGER" property="payId" />
+    <result column="payName" jdbcType="VARCHAR" property="payName"/>
+    <result column="empId" jdbcType="INTEGER" property="empId" />
+    <result column="empName" jdbcType="VARCHAR" property="empName"/>
+    <result column="navId" jdbcType="INTEGER" property="navId" />
+    <result column="materialId" jdbcType="INTEGER" property="materialId" />
+    <result column="saleMoney" jdbcType="DECIMAL" property="saleMoney"/>
+    <result column="factMoney" jdbcType="DECIMAL" property="factMoney"/> 
+  </resultMap>
+  
+  <select id="getBillInfotCount" resultType="int">
+   select count(1) as count  from market
+</select>
+  <select id="getBillInfotList" resultMap="BaseResultMap">
+    SELECT market.marketId,member.memberName,
+	combo.comboName,member.account,
+	market.totalMoney,menu.discount,
+	(market.totalMoney*menu.discount)/100 AS saleMoney,
+	paytype.payName,
+	(market.totalMoney-(market.totalMoney*menu.discount)/100) AS factMoney,
+	market.dataTime,employee.empName,market.describe,
+	member.memberId,employee.empId,
+    menu.menuId,combo.comboId,material.navId,paytype.payId,material.materialId
+	FROM market,paytype,employee,member,material,menu,combo,navigation
+	WHERE market.memberId=member.memberId and market.empId=employee.empId 
+	and market.menuId=menu.menuId 
+	and menu.comboId=combo.comboId 
+	and menu.navId=navigation.navId 
+	and navigation.navId=material.navId
+	and material.payId=paytype.payId 
+    <if test="memberName !=null and memberName != ''">
+       and memberName like '%' #{memberName} '%'
+    </if>
+      GROUP BY marketId
+      limit  #{currentPageNo},#{pageSize}
+  </select>
+  <select id="getBillInfoByIdList" resultMap="BaseResultMap">
+    SELECT market.marketId,member.memberName,
+	combo.comboName,member.account,
+	market.totalMoney,menu.discount,
+	(market.totalMoney*menu.discount) AS saleMoney,
+	paytype.payName,
+	(market.totalMoney-(market.totalMoney*menu.discount)) AS factMoney,
+	market.dataTime,employee.empName,market.describe,
+	member.memberId,employee.empId,
+    menu.menuId,combo.comboId,material.navId,paytype.payId,material.materialId
+	FROM market,paytype,employee,member,material,menu,combo,navigation
+	WHERE market.memberId=member.memberId and market.empId=employee.empId 
+	and market.menuId=menu.menuId 
+	and menu.comboId=combo.comboId 
+	and menu.navId=navigation.navId 
+	and navigation.navId=material.navId
+	and material.payId=paytype.payId 
+	and market.marketId=#{marketId}
+	GROUP BY marketId
+  </select>
+  
+  <update id="updateBillInfo" parameterType="int">
+    UPDATE member,market,menu,material
+	SET member.memberName=#{memberName},
+	market.totalMoney=#{totalMoney},market.dataTime=NOW(),market.`describe`=#{describe},market.empId=#{empId},
+	menu.discount=#{discount},menu.comboId=#{comboId},
+	material.payId=#{payId}
+	  where 
+	member.memberId=#{memberId} AND
+	market.marketId=#{marketId} AND
+	menu.menuId=#{menuId} AND
+	material.materialId=#{materialId}
+  </update>
+  
+  <delete id="delBillInfo" parameterType="int">
+    delete from market
+    where marketId = #{marketId}
+  </delete>
+  
+  
+</mapper>

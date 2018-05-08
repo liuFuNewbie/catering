@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.menu.MenuMapperCustom">
+	<cache type="cn.catering.cache.RedisCache"></cache>
+	<resultMap id="MenuResultMap" type="cn.catering.pojo.Menu">
+		<id column="menuId" jdbcType="INTEGER" property="menuId" />
+		<result column="menuName" jdbcType="VARCHAR" property="menuName" />
+		<result column="unitPrice" jdbcType="DECIMAL" property="unitPrice" />
+		<result column="cost" jdbcType="DECIMAL" property="cost" />
+		<result column="describe" jdbcType="VARCHAR" property="describe" />
+		<result column="unit" jdbcType="VARCHAR" property="unit" />
+		<result column="discount" jdbcType="INTEGER" property="discount" />
+		<result column="dateTime" jdbcType="TIMESTAMP" property="dateTime" />
+		<collection property="userList" ofType="cn.catering.pojo.User"
+			resultMap="UserResultMap" />
+		<collection property="navigationList" ofType="cn.catering.pojo.Navigation"
+			resultMap="NavigationResultMap" />
+		<collection property="comboList" ofType="cn.catering.pojo.Combo"
+			resultMap="ComboResultMap" />
+	</resultMap>
+	<resultMap id="UserResultMap" type="cn.catering.pojo.User">
+		<result column="userName" jdbcType="VARCHAR" property="userName" />
+	</resultMap>
+	<resultMap id="NavigationResultMap" type="cn.catering.pojo.Navigation">
+		<result column="navName" jdbcType="VARCHAR" property="navName" />
+	</resultMap>
+	<resultMap id="ComboResultMap" type="cn.catering.pojo.Combo">
+		<result column="comboName" jdbcType="VARCHAR" property="comboName" />
+	</resultMap>
+	<!-- 按前台的导航条数据编号获取菜谱数据 -->
+	<select id="getCount" resultType="int" parameterType="int">
+		SELECT COUNT(menuId) FROM menu
+		<where>
+			<choose>
+				<when test="navId!=0">
+					navId=#{navId}
+				</when>
+				<otherwise>
+					menuName LIKE '%' #{menuName} '%'
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	<!-- 按前台的导航条数据编号和分页对象获取菜谱数据 -->
+	<select id="selectMenusByPage" parameterType="map"
+		resultType="cn.catering.pojo.Menu">
+		SELECT
+		menuId,menuName,unitPrice,`describe`,imgPathOne,imgPathTwo,imgPathThree,unit,discount
+		FROM menu
+		<where>
+			<choose>
+				<when test="navId!=0">
+					navId=#{navId}
+				</when>
+				<otherwise>
+					menuName LIKE '%' #{menuName} '%'
+				</otherwise>
+			</choose>
+		</where>
+		LIMIT #{pageSupport.index},#{pageSupport.pageSize}
+	</select>
+	<!-- 获取所有的菜谱数据 -->
+	<select id="selectAll" resultType="cn.catering.pojo.Menu">
+		SELECT
+		menuId,menuName,unitPrice,imgPathOne,unit,discount,navId FROM menu
+	</select>
+	<!-- 根据菜谱编号、菜谱名称和创建人获取菜谱数据的行数 -->
+	<select id="getMenuCount" resultType="int">
+		SELECT COUNT(1) FROM menu m
+		INNER JOIN `user` u ON(m.userId=u.userId)
+		INNER JOIN navigation n ON(m.navId=n.navId)
+		INNER JOIN combo c ON(m.comboId=c.comboId)
+		<where>
+			<if test="menuId !=null and menuId !=''">
+				m.menuId=#{menuId}
+			</if>
+			<if test="menuName!=null and menuName!=''">
+				m.menuName LIKE '%' #{menuName} '%'
+			</if>
+			<if test="userName!=null and userName!=''">
+				u.userName=#{userName}
+			</if>
+		</where>
+	</select>
+	<!-- 根据菜谱编号、菜谱名称和创建人获取菜谱的分页数据 -->
+	<select id="getMenuList" parameterType="map" resultMap="MenuResultMap">
+		SELECT m.menuId,u.userName,m.menuName,n.navName,m.unitPrice,
+		m.cost,c.comboName,m.unit,m.discount,m.dateTime,m.`describe`
+		FROM menu m
+		INNER JOIN `user` u ON(m.userId=u.userId)
+		INNER JOIN navigation n ON(m.navId=n.navId)
+		INNER JOIN combo c ON(m.comboId=c.comboId)
+		<where>
+			<if test="menuId!=null and menuId !=''">
+				m.menuId=#{menuId}
+			</if>
+			<if test="menuName!=null and menuName!=''">
+				m.menuName LIKE '%' #{menuName} '%'
+			</if>
+			<if test="userName!=null and userName!=''">
+				u.userName=#{userName}
+			</if>
+		</where>
+		ORDER BY m.menuId
+		LIMIT #{pageSupport.index},#{pageSupport.pageSize}
+	</select>
+</mapper>

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.employee.EmployeeMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+   <resultMap id="empResultMap" type="cn.catering.pojo.Employee">
+		<id column="empId" jdbcType="INTEGER" property="empId" />
+		<result column="empName" jdbcType="VARCHAR" property="empName" />
+		<result column="bonus" jdbcType="DECIMAL" property="bonus" />
+		<result column="pose" jdbcType="INTEGER" property="pose" />
+		<result column="createDate" jdbcType="TIMESTAMP" property="createDate" />
+		<collection property="employeeTypeList" resultMap="empTypeResultMap" column="empTypeId"
+			ofType="cn.catering.pojo.EmployeeType" />
+	</resultMap>
+	<resultMap type="cn.catering.pojo.EmployeeType" id="empTypeResultMap">
+		<result column="empTypeName" jdbcType="VARCHAR" property="empTypeName" />
+	</resultMap>
+  
+  <select id="getProviderList" resultType="cn.catering.pojo.Employee" parameterType="map">
+	select  empId,empName,gender,createDate,salary,bonus from  employee where 1=1
+  <if test="empName !=null and empName != ''">
+    and  empName like  CONCAT('%',#{empName},'%')
+  </if>
+    limit  #{pageSupport.index},#{pageSupport.pageSize}
+</select>
+<select id="getEmployeeCounts" resultType="int">
+   select count(empId)  from employee 
+  <if test="empName !=null and empName !=''">
+  	<where>
+  		 empName like  CONCAT('%',#{empName},'%')
+  	</where>
+  </if>
+</select>
+	<select id="getEmployeeCount" resultType="int">
+		select COUNT(1) from employee emp INNER JOIN employeetype emptype on
+		emp.empTypeId = emptype.empTypeId
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="employeeTypeName !=null and employeeTypeName != ''">
+				and emptype.empTypeName like
+				CONCAT('%',#{employeeTypeName},'%')
+			</if>
+			<if test="pose !=null">
+				and emp.pose = #{pose}
+			</if>
+			<if test="empName !=null and empName != ''">
+				and emp.empName like CONCAT('%',#{empName},'%')
+			</if>
+		</trim>
+	</select>
+
+	<select id="getEmployeeList" resultMap="empResultMap"
+		parameterType="map">
+		select
+		emp.empId,emp.empName,emptype.empTypeName,emp.bonus,emp.pose,emp.createDate,emp.empTypeId
+		from employee emp
+		INNER JOIN employeetype emptype on emp.empTypeId =
+		emptype.empTypeId
+		<where>
+			<if test="empName !=null and empName != ''">
+				emp.empName like CONCAT('%',#{empName},'%')
+			</if>
+			<if test="employeeTypeName !=null and employeeTypeName != ''">
+				emptype.empTypeName like
+				CONCAT('%',#{employeeTypeName},'%')
+			</if>
+			<if test="pose !=null">
+				emp.pose = #{pose}
+			</if>
+		</where>
+		ORDER BY emp.empId
+		limit #{pageSupport.index},#{pageSupport.pageSize}
+	</select>
+
+	<!--获取员工信息列表 根据员工姓名获取列表信息 【条件可有可无】 -->
+	<select id="getEmployeeByOrempNameList" parameterType="map"
+		resultType="cn.catering.pojo.Employee">
+		SELECT empId,empName,gender,birthdate, phone,address FROM employee
+		<if test="empName!=null and empName!=''">
+			<where>
+				empName LIKE CONCAT('%',#{empName},'%')
+			</where>
+		</if>
+		LIMIT #{pageSupport.index},#{pageSupport.pageSize}
+	</select>
+
+	<!-- 获取员工信息列表 根据员工姓名获取列表数量 【条件可有可无】 -->
+	<select id="getEmployeeByOrempNameCount" parameterType="int"
+		resultType="int">
+		SELECT COUNT(empId) FROM employee
+		<if test="empName!=null and empName!=''">
+			<where>
+				empName LIKE CONCAT('%',#{empName},'%')
+			</where>
+		</if>
+	</select>
+
+	<!-- 获取员工编号和员工名称 -->
+	<select id="getEmployee" parameterType="map"
+		resultType="cn.catering.pojo.Employee">
+		SELECT empId,empName FROM employee
+	</select>
+	<!-- 根据员工身份证获取员工数量 -->
+	<select id="getEmployeeByidentityCard" parameterType="string"
+		resultType="int">
+		SELECT COUNT(empId) from employee where
+		identificationCard=#{identificationCard}
+	</select>
+	<!-- 添加员工信息 -->
+	<insert id="insertEmployee" parameterType="cn.catering.pojo.Employee">
+		insert into employee
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="employee.empName != null">
+				empName,
+			</if>
+			<if test="employee.gender != null">
+				gender,
+			</if>
+			<if test="employee.phone != null">
+				phone,
+			</if>
+			<if test="employee.birthdate != null">
+				birthdate,
+			</if>
+			<if test="employee.address != null">
+				address,
+			</if>
+			<if test="employee.identificationCard != null">
+				identificationCard,
+			</if>
+			<if test="employee.salary != null">
+				salary,
+			</if>
+			<if test="employee.bonus != null">
+				bonus,
+			</if>
+			<if test="employee.pose != null">
+				pose,
+			</if>
+			<if test="employee.createDate != null">
+				createDate,
+			</if>
+			<if test="employee.empTypeId != null">
+				empTypeId,
+			</if>
+			<if test="employee.majorId != null">
+				majorId,
+			</if>
+			<if test="employee.educationId != null">
+				educationId,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="employee.empName != null">
+				#{employee.empName},
+			</if>
+			<if test="employee.gender != null">
+				#{employee.gender},
+			</if>
+			<if test="employee.phone != null">
+				#{employee.phone},
+			</if>
+			<if test="employee.birthdate != null">
+				#{employee.birthdate},
+			</if>
+			<if test="employee.address != null">
+				#{employee.address},
+			</if>
+			<if test="employee.identificationCard != null">
+				#{employee.identificationCard},
+			</if>
+			<if test="employee.salary != null">
+				#{employee.salary},
+			</if>
+			<if test="employee.bonus != null">
+				#{employee.bonus},
+			</if>
+			<if test="employee.pose != null">
+				#{employee.pose},
+			</if>
+			<if test="employee.createDate != null">
+				#{employee.createDate},
+			</if>
+			<if test="employee.empTypeId != null">
+				#{employee.empTypeId},
+			</if>
+			<if test="employee.majorId != null">
+				#{employee.majorId},
+			</if>
+			<if test="employee.educationId != null">
+				#{employee.educationId},
+			</if>
+		</trim>
+	</insert>
+	<!-- 根据员工编号获取员工信息 -->
+	<select id="getEmployeeById" parameterType="int"
+		resultType="cn.catering.pojo.Employee">
+		SELECT empId,
+		empName,identificationCard,gender,phone,birthdate,address,salary,bonus,pose,empTypeId,majorId,educationId
+		FROM employee where empId=#{empId}
+	</select>
+
+	<update id="updateEmployeeById" parameterType="int">
+		update employee
+		<set>
+			<trim suffixOverrides=",">
+				<if test="record.empName != null">
+					empName = #{record.empName},
+				</if>
+				<if test="record.gender != null">
+					gender = #{record.gender},
+				</if>
+				<if test="record.phone != null">
+					phone = #{record.phone},
+				</if>
+				<if test="record.birthdate != null">
+					birthdate = #{record.birthdate},
+				</if>
+				<if test="record.address != null">
+					address = #{record.address},
+				</if>
+				<if test="record.identificationCard != null">
+					identificationCard = #{record.identificationCard},
+				</if>
+				<if test="record.salary != null">
+					salary = #{record.salary},
+				</if>
+				<if test="record.bonus != null">
+					bonus = #{record.bonus},
+				</if>
+				<if test="record.pose != null">
+					pose = #{record.pose},
+				</if>
+				<if test="record.changedDate != null">
+					changedDate = #{record.changedDate,jdbcType=TIMESTAMP},
+				</if>
+				<if test="record.empTypeId != null">
+					empTypeId = #{record.empTypeId},
+				</if>
+				<if test="record.majorId != null">
+					majorId = #{record.majorId},
+				</if>
+				<if test="record.educationId != null">
+					educationId = #{record.educationId},
+				</if>
+			</trim>
+		</set>
+		where empId=#{record.empId}
+	</update>
+	<!-- 根据员工编号获取数量 -->
+	<select id="getEmployyeByIdCount" parameterType="int" resultType="int">
+		SELECT COUNT(e.empId) FROM employee as e
+		INNER JOIN market as m ON
+		e.empId=m.empId where e.empId=#{empId};
+	</select>
+	<!-- 根据员工编号删除员工信息 -->
+	<delete id="delEmployeeById" parameterType="int">
+		DELETE FROM employee WHERE empId=#{empId}
+	</delete>
+	
+  
+</mapper>
+
+

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.elsecost.ElseCostMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+  <resultMap id="BaseResultMap" type="cn.catering.pojo.ElseCost">
+    <id column="costId" jdbcType="INTEGER" property="costId" />
+    <result column="costName" jdbcType="VARCHAR" property="costName" />
+    <result column="money" jdbcType="DECIMAL" property="money" />
+    <result column="createDate" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="costTypeId" jdbcType="INTEGER" property="costTypeId" />
+    <result column="empId" jdbcType="INTEGER" property="empId" />
+  	<result column="name" jdbcType="VARCHAR" property="name"/>
+    <result column="empName" jdbcType="VARCHAR" property="empName"/>
+  </resultMap>
+  <!-- 查询全部数据 -->
+  <select id="getElsecostList" resultMap="BaseResultMap">
+	select costId,costName,money,elsecost.createDate,`name`,empName from elsecost
+	inner join costtype on costtype.costTypeId=elsecost.costTypeId
+	INNER JOIN employee on employee.empId=elsecost.empId where 1=1
+	<if test="costName !=null and costName != ''">
+    and costtype.costTypeId like  CONCAT('%',#{costName},'%')
+  </if>
+    limit  #{pageSupport.index},#{pageSupport.pageSize}
+</select>
+  <!-- 根据ID查询总数-->
+   <select id="getElsecostCount" resultType="int">
+   select count(costId)  from elsecost 
+  <if test="costName!=null and costName!=''">
+  	<where>
+  		 costTypeId like  CONCAT('%',#{costName},'%')
+  	</where>
+  </if>
+  <!-- 根据ID查询数据 用于修改-->
+   </select>
+   <select id="getElseCostByid" resultMap="BaseResultMap">
+	select costId,costName,money,createDate,costTypeId,empId from elsecost where costId=#{costId}
+  </select>
+  <!-- 修改 -->
+   <update id="updateElseCost" parameterType="cn.catering.pojo.ElseCost">
+ 	update  elsecost set costId=#{costId}, costName =#{costName},money =#{money},createDate =NOW(),costTypeId =#{costTypeId},empId =#{empId} WHERE costId =#{costId}   
+   </update>
+    <!-- 增加 -->
+   <insert id="addElseCost" parameterType="map">
+     insert elsecost(costId,elsecost.costName,money,createDate,costTypeId,empId)
+     values (null,#{costName},#{money},NOW(),#{costTypeId},#{empId})
+   </insert>
+   
+
+</mapper>

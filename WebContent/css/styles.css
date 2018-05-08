@@ -1,0 +1,55 @@
+#all {
+	margin: 0px 10px;
+}
+
+table td {
+	width: 5%;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+}
+
+#all .inquiry {
+	overflow: hidden;
+	padding-right: 3%;
+	
+}
+
+#all .tables tr td a {
+	margin: 0px 3px;
+}
+
+.poster {
+	display: inline-block;
+	margin-right: 20px;
+}
+
+.add {
+	display: inline-block;
+	margin-left: 5%;
+	overflow: hidden;
+}
+
+#all .tables tr:HOVER {
+	background-color: #caeed0;
+}
+
+.increased {
+	display: inline-block;
+	padding: 4px 15px;
+	background-color: lightseagreen;
+	border-radius: 10px;
+	margin: 1px 0px 0px 15px;
+}
+ 
+.increasedName {
+	margin-left: 10px;
+	font-size: 16px;
+	color: white;
+}
+.fanhui{
+	color: white;
+}
+.fanhui HOVER {
+	 color: white;
+}

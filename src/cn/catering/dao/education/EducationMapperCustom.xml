@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.education.EducationMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+	<!-- 获取学历信息列表 -->
+	<select id="getEducationList" parameterType="map"
+		resultType="cn.catering.pojo.Education">
+		SELECT educationId,educationName from education
+	</select>
+</mapper>

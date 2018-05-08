@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.catering.dao.purchase.PurchaseMapperCustom">
+<cache type="cn.catering.cache.RedisCache"></cache>
+    <select id="getAllPurchase" resultType="cn.catering.pojo.Purchase">
+		select purchaseId,shoppingName,number,unit,money,createDate,state from purchase
+		<trim prefix="where" prefixOverrides="and | or">
+			<if test="shoppingName !=null and shoppingName != ''">
+				and shoppingName like CONCAT('%',#{shoppingName},'%')
+			</if>
+		</trim>
+	</select>
+	
+	<select id="getPurchaseByIdInfo" resultType="cn.catering.pojo.Purchase">
+		select purchaseId,shoppingName,number,unit,money,createDate,state from purchase where purchaseId = #{purchaseId}
+	</select>
+	
+	<update id="updatePUrchaseById">
+	   update purchase set shoppingName = #{purchase.shoppingName}, number = #{purchase.number}, unit = #{purchase.unit}, money = #{purchase.money},state = #{purchase.state} WHERE purchaseId = #{purchase.purchaseId}
+	</update>
+	
+</mapper>
